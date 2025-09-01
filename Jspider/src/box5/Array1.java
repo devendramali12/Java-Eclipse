@@ -11,6 +11,13 @@ public class Array1 {
 		arr[2] = 63;
 		arr[3] = 85;
 		arr[4] = 75;
+		System.out.println("---------------------------------");
+
+		System.out.println(arr[0]);
+		System.out.println(arr[1]);
+		System.out.println(arr[2]);
+		System.out.println(arr[3]);
+		System.out.println(arr[4]);
 
 	}
 
