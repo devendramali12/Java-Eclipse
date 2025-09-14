@@ -17,6 +17,7 @@ public class ReverseNum {
 
 		}
 		System.out.println("The Reversed Of a Given Number is :- " + rev);
+		sc.close();
 
 	}
 

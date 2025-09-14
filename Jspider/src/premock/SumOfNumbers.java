@@ -17,6 +17,7 @@ public class SumOfNumbers {
 			num /= 10;
 		}
 		System.out.println("The Sum Of Digits In a Number Is :- " + sum);
+		sc.close();
 	}
 
 }
