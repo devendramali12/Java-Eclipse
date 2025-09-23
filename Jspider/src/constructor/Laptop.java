@@ -24,6 +24,9 @@ public class Laptop {
 		lap l1 = new lap();
 
 		l1.display();
+
+		lap l2 = new lap();
+		l2.display();
 	}
 
 }
