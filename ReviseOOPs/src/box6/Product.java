@@ -12,4 +12,8 @@ public class Product {
 		System.out.println("this: " + this);
 
 	}
+
+	void display() {
+		System.out.println("Product id is:- " + id + " Name is:- " + name);
+	}
 }
