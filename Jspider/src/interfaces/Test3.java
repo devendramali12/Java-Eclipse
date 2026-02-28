@@ -1,5 +1,6 @@
 package interfaces;
 
+// --> Multiple Classes Implementing Same Interface
 interface shape {
 	void draw();
 }
