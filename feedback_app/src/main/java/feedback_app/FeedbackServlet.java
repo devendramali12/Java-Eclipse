@@ -2,6 +2,8 @@ package feedback_app;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,30 +17,39 @@ public class FeedbackServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		// from data get karna hoga
 		String email = req.getParameter("email");
-
 		String phone = req.getParameter("phone");
-
 		String feedbackMessage = req.getParameter("feedback_message");
 
-		// form data process
-
-		// response dena hoga
 		resp.setContentType("text/html");
-		PrintWriter writer = resp.getWriter();
+		PrintWriter out = resp.getWriter();
 
-		writer.print("<h1>Feedback servlet working</h1>");
+		try {
 
-		writer.println("""
+			Connection conn = DBConnection.getConnection();
 
-				<h2> Your form details that you have submitted</h2>
-				<h3> Email address %s </h3>
-				<h3> Phone number %s </h3>
-				<h3> feedback message %s </h3>
+			String sql = "INSERT INTO feedback (email, phone, message) VALUES (?, ?, ?)";
 
-				""".formatted(email, phone, feedbackMessage));
+			PreparedStatement ps = conn.prepareStatement(sql);
 
+			ps.setString(1, email);
+			ps.setString(2, phone);
+			ps.setString(3, feedbackMessage);
+
+			int rowsInserted = ps.executeUpdate();
+
+			if (rowsInserted > 0) {
+				out.println("<h2 style='color:green;'>Feedback Saved Successfully!</h2>");
+			} else {
+				out.println("<h2 style='color:red;'>Failed to Save Feedback</h2>");
+			}
+
+			ps.close();
+			conn.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			out.println("<h3 style='color:red;'>Error: " + e.getMessage() + "</h3>");
+		}
 	}
-
 }
