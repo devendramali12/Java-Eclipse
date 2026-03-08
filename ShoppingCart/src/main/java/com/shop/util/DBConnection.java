@@ -6,21 +6,28 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-	private static final String DRIVER = "org.postgresql.Driver";
-	private static final String URL = "jdbc:postgresql://localhost:5432/shopping_cart_db";
-	private static final String USERNAME = "postgres";
-	private static final String PASSWORD = "admin";
+	private static final String URL;
+	private static final String USERNAME;
+	private static final String PASSWORD;
 
 	static {
-		try {
-			Class.forName(DRIVER);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("PostgreSQL JDBC Driver not found!", e);
-		}
+		// Use environment variables on Railway, fallback to local for Eclipse
+		String envUrl = System.getenv("DB_URL");
+		String envUser = System.getenv("DB_USER");
+		String envPass = System.getenv("DB_PASS");
+
+		URL = (envUrl != null) ? envUrl : "jdbc:postgresql://localhost:5432/shopping_cart_db";
+		USERNAME = (envUser != null) ? envUser : "postgres";
+		PASSWORD = (envPass != null) ? envPass : "admin";
 	}
 
 	public static Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(URL, USERNAME, PASSWORD);
+		try {
+			Class.forName("org.postgresql.Driver");
+			return DriverManager.getConnection(URL, USERNAME, PASSWORD);
+		} catch (ClassNotFoundException e) {
+			throw new SQLException("PostgreSQL Driver not found", e);
+		}
 	}
 
 	public static void closeConnection(Connection conn) {
@@ -33,3 +40,14 @@ public class DBConnection {
 		}
 	}
 }
+//}```
+//
+//---
+//
+//##Step 3—Create.gitignore
+//
+//Create a`.gitignore`
+//file in
+//your project root if you don't
+//have one:```target/*.class*.war.classpath.project.settings
+///
