@@ -13,14 +13,14 @@ import com.shop.util.DBConnection;
 public class ProductDAO {
 
 	public List<Product> getAllProducts() {
-		return getFilteredProducts(null, 0, "newest", 0, 0, 1, 1000);
+		return getFilteredProducts(null, 0, "newest", 0, 0, 1, 9999);
 	}
 
 	public List<Product> getFilteredProducts(String keyword, int categoryId, String sortBy, double minPrice,
 			double maxPrice, int page, int pageSize) {
 
 		List<Product> list = new ArrayList<>();
-		StringBuilder sql = new StringBuilder("SELECT p.*, c.category_name FROM products p "
+		StringBuilder sql = new StringBuilder("SELECT p.*, c.category_name, c.emoji FROM products p "
 				+ "LEFT JOIN categories c ON p.category_id = c.category_id WHERE 1=1");
 
 		if (keyword != null && !keyword.trim().isEmpty())
@@ -45,7 +45,8 @@ public class ProductDAO {
 			break;
 		}
 
-		if (pageSize < 1000)
+		boolean paginate = (pageSize < 9999);
+		if (paginate)
 			sql.append(" LIMIT ? OFFSET ?");
 
 		try (Connection conn = DBConnection.getConnection();
@@ -62,7 +63,7 @@ public class ProductDAO {
 				ps.setDouble(idx++, minPrice);
 				ps.setDouble(idx++, maxPrice);
 			}
-			if (pageSize < 1000) {
+			if (paginate) {
 				ps.setInt(idx++, pageSize);
 				ps.setInt(idx, (page - 1) * pageSize);
 			}
@@ -84,6 +85,7 @@ public class ProductDAO {
 			sql.append(" AND p.category_id = ?");
 		if (maxPrice > 0)
 			sql.append(" AND p.price BETWEEN ? AND ?");
+
 		try (Connection conn = DBConnection.getConnection();
 				PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 			int idx = 1;
@@ -108,8 +110,8 @@ public class ProductDAO {
 	}
 
 	public Product getProductById(int productId) {
-		String sql = "SELECT p.*, c.category_name FROM products p "
-				+ "LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.product_id = ?";
+		String sql = "SELECT p.*, c.category_name, c.emoji FROM products p "
+				+ "LEFT JOIN categories c ON p.category_id = c.category_id " + "WHERE p.product_id = ?";
 		try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, productId);
 			try (ResultSet rs = ps.executeQuery()) {
@@ -122,17 +124,10 @@ public class ProductDAO {
 		return null;
 	}
 
-	public List<Product> getProductsByCategory(int categoryId) {
-		return getFilteredProducts(null, categoryId, "newest", 0, 0, 1, 1000);
-	}
-
-	public List<Product> searchProducts(String keyword) {
-		return getFilteredProducts(keyword, 0, "newest", 0, 0, 1, 1000);
-	}
-
-	// Admin: Add product
 	public boolean addProduct(Product p) {
-		String sql = "INSERT INTO products (product_name, description, price, stock_quantity, category_id, image_url) VALUES (?,?,?,?,?,?)";
+		String sql = "INSERT INTO products "
+				+ "(product_name, description, price, stock_quantity, category_id, image_url) "
+				+ "VALUES (?,?,?,?,?,?)";
 		try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, p.getProductName());
 			ps.setString(2, p.getDescription());
@@ -147,9 +142,9 @@ public class ProductDAO {
 		return false;
 	}
 
-	// Admin: Update product
 	public boolean updateProduct(Product p) {
-		String sql = "UPDATE products SET product_name=?, description=?, price=?, stock_quantity=?, category_id=?, image_url=? WHERE product_id=?";
+		String sql = "UPDATE products SET product_name=?, description=?, price=?, "
+				+ "stock_quantity=?, category_id=?, image_url=? WHERE product_id=?";
 		try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, p.getProductName());
 			ps.setString(2, p.getDescription());
@@ -165,31 +160,22 @@ public class ProductDAO {
 		return false;
 	}
 
-	// Admin: Delete product
 	public boolean deleteProduct(int productId) {
-		String sql = "DELETE FROM products WHERE product_id=?";
-		try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-			ps.setInt(1, productId);
-			return ps.executeUpdate() > 0;
+		try (Connection conn = DBConnection.getConnection()) {
+			PreparedStatement del1 = conn.prepareStatement("DELETE FROM cart WHERE product_id=?");
+			del1.setInt(1, productId);
+			del1.executeUpdate();
+			PreparedStatement del2 = conn.prepareStatement("DELETE FROM products WHERE product_id=?");
+			del2.setInt(1, productId);
+			return del2.executeUpdate() > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
 
-	// All categories
 	public List<String[]> getAllCategories() {
-		List<String[]> list = new ArrayList<>();
-		String sql = "SELECT category_id, category_name FROM categories ORDER BY category_id";
-		try (Connection conn = DBConnection.getConnection();
-				PreparedStatement ps = conn.prepareStatement(sql);
-				ResultSet rs = ps.executeQuery()) {
-			while (rs.next())
-				list.add(new String[] { rs.getString(1), rs.getString(2) });
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return list;
+		return new CategoryDAO().getAllCategoryPairs();
 	}
 
 	private Product mapRow(ResultSet rs) throws SQLException {
@@ -202,6 +188,10 @@ public class ProductDAO {
 		p.setCategoryId(rs.getInt("category_id"));
 		p.setCategoryName(rs.getString("category_name"));
 		p.setImageUrl(rs.getString("image_url"));
+		try {
+			p.setCategoryEmoji(rs.getString("emoji"));
+		} catch (SQLException ignored) {
+		}
 		return p;
 	}
 }

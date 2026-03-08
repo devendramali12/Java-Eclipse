@@ -8,6 +8,7 @@ public class Product {
 	private int stockQuantity;
 	private int categoryId;
 	private String categoryName;
+	private String categoryEmoji;
 	private String imageUrl;
 
 	public Product() {
@@ -67,6 +68,14 @@ public class Product {
 
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
+	}
+
+	public String getCategoryEmoji() {
+		return categoryEmoji;
+	}
+
+	public void setCategoryEmoji(String categoryEmoji) {
+		this.categoryEmoji = categoryEmoji;
 	}
 
 	public String getImageUrl() {

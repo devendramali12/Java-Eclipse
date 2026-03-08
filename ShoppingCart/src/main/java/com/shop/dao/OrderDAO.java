@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.shop.model.CartItem;
 import com.shop.model.Order;
@@ -31,7 +33,6 @@ public class OrderDAO {
 				return -1;
 			}
 			int orderId = rs.getInt(1);
-
 			PreparedStatement itemPs = conn.prepareStatement(
 					"INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?,?,?,?)");
 			for (CartItem item : cartItems) {
@@ -60,9 +61,8 @@ public class OrderDAO {
 
 	public List<Order> getOrdersByUser(int userId) {
 		List<Order> list = new ArrayList<>();
-		try (Connection conn = DBConnection.getConnection();
-				PreparedStatement ps = conn
-						.prepareStatement("SELECT * FROM orders WHERE user_id=? ORDER BY order_date DESC")) {
+		String sql = "SELECT * FROM orders WHERE user_id=? ORDER BY order_date DESC";
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, userId);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next())
@@ -73,10 +73,9 @@ public class OrderDAO {
 		return list;
 	}
 
-	// All orders for admin
 	public List<Order> getAllOrders() {
 		List<Order> list = new ArrayList<>();
-		String sql = "SELECT o.*, u.full_name, u.username FROM orders o "
+		String sql = "SELECT o.*, u.full_name FROM orders o "
 				+ "JOIN users u ON o.user_id = u.user_id ORDER BY o.order_date DESC";
 		try (Connection conn = DBConnection.getConnection();
 				PreparedStatement ps = conn.prepareStatement(sql);
@@ -92,7 +91,23 @@ public class OrderDAO {
 		return list;
 	}
 
-	// Order items for invoice
+	public Order getOrderById(int orderId) {
+		String sql = "SELECT o.*, u.full_name FROM orders o "
+				+ "JOIN users u ON o.user_id = u.user_id WHERE o.order_id=?";
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setInt(1, orderId);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				Order o = mapRow(rs);
+				o.setCustomerName(rs.getString("full_name"));
+				return o;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public List<OrderItem> getOrderItems(int orderId) {
 		List<OrderItem> list = new ArrayList<>();
 		String sql = "SELECT oi.*, p.product_name, p.image_url FROM order_items oi "
@@ -117,23 +132,9 @@ public class OrderDAO {
 		return list;
 	}
 
-	public Order getOrderById(int orderId) {
-		try (Connection conn = DBConnection.getConnection();
-				PreparedStatement ps = conn.prepareStatement("SELECT * FROM orders WHERE order_id=?")) {
-			ps.setInt(1, orderId);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next())
-				return mapRow(rs);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	// Admin: update order status
 	public boolean updateOrderStatus(int orderId, String status) {
-		try (Connection conn = DBConnection.getConnection();
-				PreparedStatement ps = conn.prepareStatement("UPDATE orders SET status=? WHERE order_id=?")) {
+		String sql = "UPDATE orders SET status=? WHERE order_id=?";
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, status);
 			ps.setInt(2, orderId);
 			return ps.executeUpdate() > 0;
@@ -141,6 +142,128 @@ public class OrderDAO {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public double getTotalRevenue() {
+		String sql = "SELECT COALESCE(SUM(total_amount),0) FROM orders WHERE status='DELIVERED'";
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			if (rs.next())
+				return rs.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public double getTodayRevenue() {
+		String sql = "SELECT COALESCE(SUM(total_amount),0) FROM orders "
+				+ "WHERE order_date::date = CURRENT_DATE AND status != 'CANCELLED'";
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			if (rs.next())
+				return rs.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public int getTodayOrderCount() {
+		String sql = "SELECT COUNT(*) FROM orders WHERE order_date::date = CURRENT_DATE";
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			if (rs.next())
+				return rs.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public Map<String, Double> getMonthlyRevenue() {
+		Map<String, Double> map = new LinkedHashMap<>();
+		String sql = "SELECT TO_CHAR(order_date,'Mon YYYY') AS month, "
+				+ "       DATE_TRUNC('month', order_date) AS sort_key, "
+				+ "       COALESCE(SUM(total_amount),0) AS revenue "
+				+ "FROM orders WHERE order_date >= NOW() - INTERVAL '6 months' " + "  AND status != 'CANCELLED' "
+				+ "GROUP BY month, sort_key ORDER BY sort_key ASC";
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			while (rs.next())
+				map.put(rs.getString("month"), rs.getDouble("revenue"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return map;
+	}
+
+	public Map<String, Integer> getOrderStatusCounts() {
+		Map<String, Integer> map = new LinkedHashMap<>();
+		String sql = "SELECT status, COUNT(*) AS cnt FROM orders GROUP BY status ORDER BY status";
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			while (rs.next())
+				map.put(rs.getString("status"), rs.getInt("cnt"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return map;
+	}
+
+	public List<String[]> getTopProducts() {
+		List<String[]> list = new ArrayList<>();
+		String sql = "SELECT p.product_name, SUM(oi.quantity) AS total_sold, "
+				+ "       SUM(oi.quantity * oi.price) AS revenue "
+				+ "FROM order_items oi JOIN products p ON oi.product_id = p.product_id "
+				+ "GROUP BY p.product_name ORDER BY total_sold DESC LIMIT 5";
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			while (rs.next())
+				list.add(new String[] { rs.getString("product_name"), rs.getString("total_sold"),
+						rs.getString("revenue") });
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public Map<String, Double> getRevenueByCategory() {
+		Map<String, Double> map = new LinkedHashMap<>();
+		String sql = "SELECT c.category_name, COALESCE(SUM(oi.quantity * oi.price),0) AS revenue "
+				+ "FROM order_items oi " + "JOIN products p   ON oi.product_id  = p.product_id "
+				+ "JOIN categories c ON p.category_id  = c.category_id "
+				+ "GROUP BY c.category_name ORDER BY revenue DESC";
+		try (Connection conn = DBConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			while (rs.next())
+				map.put(rs.getString("category_name"), rs.getDouble("revenue"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return map;
+	}
+
+	public List<String[]> getLowStockProducts(int threshold) {
+		List<String[]> list = new ArrayList<>();
+		String sql = "SELECT product_name, stock_quantity FROM products "
+				+ "WHERE stock_quantity <= ? ORDER BY stock_quantity ASC";
+		try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setInt(1, threshold);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next())
+				list.add(new String[] { rs.getString("product_name"), rs.getString("stock_quantity") });
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 
 	private Order mapRow(ResultSet rs) throws SQLException {
