@@ -18,6 +18,10 @@ public class CartServlet extends HttpServlet {
 
 	private final CartDAO cartDAO = new CartDAO();
 
+	private void updateCartCount(HttpServletRequest req, int userId) {
+		req.getSession().setAttribute("cartCount", cartDAO.getCartCount(userId));
+	}
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		User user = (User) req.getSession().getAttribute("loggedUser");
@@ -28,6 +32,7 @@ public class CartServlet extends HttpServlet {
 
 		if ("remove".equals(req.getParameter("action"))) {
 			cartDAO.removeFromCart(Integer.parseInt(req.getParameter("cartId")));
+			updateCartCount(req, user.getUserId());
 			resp.sendRedirect(req.getContextPath() + "/cart");
 			return;
 		}
@@ -36,6 +41,7 @@ public class CartServlet extends HttpServlet {
 		double grandTotal = cartItems.stream().mapToDouble(CartItem::getSubtotal).sum();
 		req.setAttribute("cartItems", cartItems);
 		req.setAttribute("grandTotal", grandTotal);
+		updateCartCount(req, user.getUserId());
 		req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
 	}
 
@@ -51,6 +57,7 @@ public class CartServlet extends HttpServlet {
 		if ("add".equals(action)) {
 			cartDAO.addToCart(user.getUserId(), Integer.parseInt(req.getParameter("productId")),
 					Integer.parseInt(req.getParameter("quantity")));
+			updateCartCount(req, user.getUserId());
 			resp.sendRedirect(req.getContextPath() + "/cart");
 		} else if ("update".equals(action)) {
 			int qty = Integer.parseInt(req.getParameter("quantity"));
@@ -59,6 +66,7 @@ public class CartServlet extends HttpServlet {
 				cartDAO.removeFromCart(cartId);
 			else
 				cartDAO.updateCartItem(cartId, qty);
+			updateCartCount(req, user.getUserId());
 			resp.sendRedirect(req.getContextPath() + "/cart");
 		}
 	}

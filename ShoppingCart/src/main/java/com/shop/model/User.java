@@ -8,6 +8,7 @@ public class User {
 	private String fullName;
 	private String phone;
 	private String address;
+	private boolean admin;
 
 	public User() {
 	}
@@ -66,5 +67,13 @@ public class User {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 }

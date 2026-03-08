@@ -9,6 +9,7 @@ public class Order {
 	private String status;
 	private String shippingAddress;
 	private Timestamp orderDate;
+	private String customerName; // for admin view
 
 	public Order() {
 	}
@@ -59,5 +60,13 @@ public class Order {
 
 	public void setOrderDate(Timestamp orderDate) {
 		this.orderDate = orderDate;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 }

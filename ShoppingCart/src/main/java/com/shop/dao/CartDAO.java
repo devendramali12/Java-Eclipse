@@ -99,4 +99,9 @@ public class CartDAO {
 		}
 		return false;
 	}
+
+	public Object getCartCount(int userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
