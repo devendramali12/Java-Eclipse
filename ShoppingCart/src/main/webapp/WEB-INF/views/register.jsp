@@ -27,13 +27,13 @@
             <div class="form-row">
                 <div class="form-group">
                     <label><i class="fas fa-id-card"></i> Full Name</label>
-                    <input type="text" name="fullName" placeholder="e.g. Rahul Sharma"
+                    <input type="text" name="fullName" 
                            value="${param.fullName}" required minlength="3" maxlength="100">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-at"></i> Username</label>
                     <input type="text" name="username" id="username"
-                           placeholder="e.g. rahul_sharma"
+                           
                            value="${param.username}"
                            required minlength="3" maxlength="50"
                            pattern="[a-zA-Z0-9_]+"
@@ -45,13 +45,13 @@
             <div class="form-row">
                 <div class="form-group">
                     <label><i class="fas fa-envelope"></i> Email Address</label>
-                    <input type="email" name="email" placeholder="rahul@example.com"
+                    <input type="email" name="email" 
                            value="${param.email}" required maxlength="100">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-phone"></i> Phone Number</label>
                     <input type="tel" name="phone" id="phoneInput"
-                           placeholder="10-digit mobile number"
+                          
                            value="${param.phone}"
                            pattern="[0-9]{10}" maxlength="10">
                     <span class="input-hint">Optional — 10 digits only</span>
@@ -62,7 +62,7 @@
                 <div class="form-group">
                     <label><i class="fas fa-lock"></i> Password</label>
                     <input type="password" name="password" id="password"
-                           placeholder="Min 6 characters" required minlength="6" maxlength="50">
+                            required minlength="6" maxlength="50">
                     <div class="password-strength" id="strengthMeter" style="display:none">
                         <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
                         <span class="strength-text" id="strengthText"></span>
@@ -71,14 +71,14 @@
                 <div class="form-group">
                     <label><i class="fas fa-lock"></i> Confirm Password</label>
                     <input type="password" name="confirmPassword" id="confirmPassword"
-                           placeholder="Re-enter password" required minlength="6">
+                            required minlength="6">
                     <span class="input-hint" id="matchHint"></span>
                 </div>
             </div>
 
             <div class="form-group">
                 <label><i class="fas fa-map-marker-alt"></i> Shipping Address</label>
-                <textarea name="address" placeholder="House No, Street, Area, City, State, PIN Code"
+                <textarea name="address" 
                           rows="2" maxlength="300">${param.address}</textarea>
                 <span class="input-hint">Used as default address at checkout</span>
             </div>
