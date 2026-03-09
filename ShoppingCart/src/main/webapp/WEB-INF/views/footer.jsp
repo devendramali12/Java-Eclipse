@@ -2,214 +2,417 @@
 
 <footer class="footer">
 
-    <div class="footer-container">
+<div class="footer-container">
 
-        <!-- BRAND -->
-        <div class="footer-brand">
-            <h2 class="footer-logo">
-                Shop<span>Ease</span>
-            </h2>
-            <p class="footer-tagline">
-                Your trusted online shopping destination
-            </p>
-        </div>
+    <!-- BRAND -->
 
-        <!-- LINKS -->
-        <nav class="footer-links" aria-label="Footer Navigation">
-            <a href="${pageContext.request.contextPath}/products">🛍️ Shop</a>
-            <a href="${pageContext.request.contextPath}/cart">🛒 Cart</a>
-            <a href="${pageContext.request.contextPath}/orders">📦 Orders</a>
-            <a href="${pageContext.request.contextPath}/profile">👤 Profile</a>
-        </nav>
+    <div class="footer-brand">
 
-        <!-- TECHNOLOGIES -->
-        <div class="footer-tech">
-            <span class="tech-badge">☕ Java Servlet</span>
-            <span class="tech-badge">📄 JSP</span>
-            <span class="tech-badge">🐘 PostgreSQL</span>
-            <span class="tech-badge">🐱 Tomcat 11</span>
+        <h2 class="footer-logo">
+            Shop<span>Ease</span>
+        </h2>
+
+        <p class="footer-desc">
+            ShopEase is your trusted online marketplace delivering quality
+            products with secure payments and fast shipping.
+        </p>
+
+        <!-- TRUST BADGES -->
+
+        <div class="trust-badges">
+
+            <span>🔒 Secure Checkout</span>
+            <span>🚚 Fast Delivery</span>
+            <span>↩ Easy Returns</span>
+            <span>⭐ Trusted Store</span>
+
         </div>
 
     </div>
 
-    <!-- FOOTER BOTTOM -->
 
-    <div class="footer-bottom">
+    <!-- QUICK LINKS -->
 
-        <p>
-            &copy; <%= java.time.Year.now() %>
-            <span class="brand-name">ShopEase</span>
-            — All rights reserved.
-        </p>
+    <div class="footer-section">
 
-        <p class="footer-credit">
-            Designed & Developed with
-            <span class="heart">❤</span>
-            by
-            <span class="dev-name">Devendra Mali</span>
-        </p>
+        <h3>Quick Links</h3>
+
+        <a href="${pageContext.request.contextPath}/products">Shop</a>
+        <a href="${pageContext.request.contextPath}/cart">Cart</a>
+        <a href="${pageContext.request.contextPath}/orders">Orders</a>
+        <a href="${pageContext.request.contextPath}/profile">Profile</a>
 
     </div>
+
+
+    <!-- CUSTOMER SERVICE -->
+
+    <div class="footer-section">
+
+        <h3>Customer Service</h3>
+
+        <a href="#">Help Center</a>
+        <a href="#">Return Policy</a>
+        <a href="#">Shipping Info</a>
+        <a href="#">Contact Support</a>
+
+        <p class="support">📧 support@shopease.com</p>
+        <p class="support">📞 +91 98765 43210</p>
+
+    </div>
+
+
+    <!-- NEWSLETTER -->
+
+    <div class="footer-section">
+
+        <h3>Stay Updated</h3>
+
+        <p class="newsletter-text">
+            Subscribe for latest offers and product updates.
+        </p>
+
+        <form class="newsletter-form">
+
+            <input type="email" placeholder="Enter your email">
+
+            <button type="submit">
+                Subscribe
+            </button>
+
+        </form>
+
+        <!-- PAYMENT METHODS -->
+
+        <div class="payments">
+
+            <span>💳 Visa</span>
+            <span>💳 Mastercard</span>
+            <span>🏦 UPI</span>
+            <span>📱 Paytm</span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- FOOTER BOTTOM -->
+
+<div class="footer-bottom">
+
+    <p>
+        © <%= java.time.Year.now() %>
+        <span class="brand">ShopEase</span>
+        — All rights reserved
+    </p>
+
+    <p>
+        Designed & Developed with ❤ by
+        <span class="dev">Devendra Mali</span>
+    </p>
+
+</div>
 
 </footer>
 
+
 <style>
 
+/* FOOTER */
+
 .footer{
-    background: linear-gradient(135deg,var(--navy),#0f1a35);
-    color: rgba(255,255,255,.65);
-    margin-top:4rem;
-    border-top:3px solid var(--saffron);
-    font-family:'DM Sans',sans-serif;
+
+background:linear-gradient(135deg,#0f1a35,#091225);
+
+color:rgba(255,255,255,.75);
+
+font-family:'DM Sans',sans-serif;
+
+margin-top:4rem;
+
+border-top:3px solid #ff9933;
+
 }
 
+
+/* CONTAINER */
+
 .footer-container{
-    max-width:1280px;
-    margin:auto;
-    padding:2.5rem 2rem;
-    display:grid;
-    grid-template-columns:1.5fr 1fr 1.5fr;
-    gap:2rem;
-    align-items:center;
+
+max-width:1300px;
+
+margin:auto;
+
+padding:3rem 2rem;
+
+display:grid;
+
+grid-template-columns:2fr 1fr 1fr 1.5fr;
+
+gap:2rem;
+
 }
+
 
 /* LOGO */
 
 .footer-logo{
-    font-family:'Playfair Display',serif;
-    font-size:1.7rem;
-    font-weight:700;
-    color:#fff;
+
+font-size:1.8rem;
+
+font-family:'Playfair Display',serif;
+
+color:white;
+
 }
 
 .footer-logo span{
-    color:var(--saffron);
+
+color:#ff9933;
+
 }
 
-.footer-tagline{
-    font-size:.85rem;
-    color:rgba(255,255,255,.45);
-    margin-top:.3rem;
+.footer-desc{
+
+font-size:.85rem;
+
+margin:.6rem 0;
+
+color:rgba(255,255,255,.6);
+
+line-height:1.5;
+
 }
 
-/* LINKS */
 
-.footer-links{
-    display:flex;
-    flex-direction:column;
-    gap:.6rem;
-    align-items:center;
+/* TRUST BADGES */
+
+.trust-badges{
+
+display:flex;
+
+flex-wrap:wrap;
+
+gap:.4rem;
+
+margin-top:.7rem;
+
 }
 
-.footer-links a{
-    text-decoration:none;
-    font-size:.85rem;
-    color:rgba(255,255,255,.65);
-    transition:.2s;
+.trust-badges span{
+
+background:rgba(255,255,255,.07);
+
+border:1px solid rgba(255,255,255,.15);
+
+padding:.3rem .6rem;
+
+border-radius:20px;
+
+font-size:.75rem;
+
 }
 
-.footer-links a:hover{
-    color:var(--saffron);
-    transform:translateX(2px);
+
+/* SECTIONS */
+
+.footer-section h3{
+
+color:white;
+
+margin-bottom:.6rem;
+
+font-size:1rem;
+
 }
 
-/* TECH BADGES */
+.footer-section a{
 
-.footer-tech{
-    display:flex;
-    flex-wrap:wrap;
-    gap:.5rem;
-    justify-content:flex-end;
+display:block;
+
+text-decoration:none;
+
+color:rgba(255,255,255,.7);
+
+font-size:.85rem;
+
+margin:.35rem 0;
+
+transition:.2s;
+
 }
 
-.tech-badge{
-    background:rgba(255,255,255,.07);
-    border:1px solid rgba(255,255,255,.12);
-    padding:.35rem .8rem;
-    border-radius:50px;
-    font-size:.75rem;
-    transition:.2s;
+.footer-section a:hover{
+
+color:#ff9933;
+
+transform:translateX(3px);
+
 }
 
-.tech-badge:hover{
-    background:rgba(232,135,42,.2);
-    border-color:var(--saffron);
-    color:var(--saffron);
+
+/* SUPPORT */
+
+.support{
+
+font-size:.8rem;
+
+margin-top:.3rem;
+
 }
+
+
+/* NEWSLETTER */
+
+.newsletter-text{
+
+font-size:.8rem;
+
+margin-bottom:.6rem;
+
+}
+
+.newsletter-form{
+
+display:flex;
+
+gap:.4rem;
+
+}
+
+.newsletter-form input{
+
+flex:1;
+
+padding:.45rem;
+
+border:none;
+
+border-radius:4px;
+
+}
+
+.newsletter-form button{
+
+background:#ff9933;
+
+border:none;
+
+padding:.45rem .8rem;
+
+border-radius:4px;
+
+cursor:pointer;
+
+font-size:.8rem;
+
+}
+
+.newsletter-form button:hover{
+
+background:#ffa733;
+
+}
+
+
+/* PAYMENTS */
+
+.payments{
+
+margin-top:.7rem;
+
+display:flex;
+
+gap:.5rem;
+
+flex-wrap:wrap;
+
+font-size:.8rem;
+
+opacity:.85;
+
+}
+
 
 /* BOTTOM */
 
 .footer-bottom{
-    border-top:1px solid rgba(255,255,255,.08);
-    padding:1.2rem 2rem;
-    max-width:1280px;
-    margin:auto;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-size:.8rem;
-    flex-wrap:wrap;
-    gap:.5rem;
-}
 
-.brand-name{
-    color:var(--saffron);
-    font-weight:600;
-}
+border-top:1px solid rgba(255,255,255,.1);
 
-.footer-credit{
-    display:flex;
-    align-items:center;
-    gap:.35rem;
-}
+margin-top:1.5rem;
 
-/* HEART ANIMATION */
+padding:1rem 2rem;
 
-.heart{
-    color:#e53e3e;
-    animation:heartbeat 1.5s infinite;
-}
+max-width:1300px;
 
-@keyframes heartbeat{
+margin:auto;
 
-0%,100%{transform:scale(1)}
-25%{transform:scale(1.2)}
-50%{transform:scale(1)}
-75%{transform:scale(1.1)}
+display:flex;
+
+justify-content:space-between;
+
+flex-wrap:wrap;
+
+font-size:.8rem;
 
 }
 
-/* DEV NAME */
+.brand{
 
-.dev-name{
-    font-weight:700;
-    background:linear-gradient(90deg,var(--saffron),#f5c76e);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
+color:#ff9933;
+
+font-weight:600;
+
 }
+
+.dev{
+
+color:#ff9933;
+
+font-weight:700;
+
+}
+
 
 /* RESPONSIVE */
 
-@media(max-width:768px){
+@media(max-width:900px){
 
 .footer-container{
-    grid-template-columns:1fr;
-    text-align:center;
+
+grid-template-columns:1fr 1fr;
+
 }
 
-.footer-links{
-    flex-direction:row;
-    flex-wrap:wrap;
-    justify-content:center;
 }
 
-.footer-tech{
-    justify-content:center;
+@media(max-width:600px){
+
+.footer-container{
+
+grid-template-columns:1fr;
+
+text-align:center;
+
+}
+
+.trust-badges{
+
+justify-content:center;
+
 }
 
 .footer-bottom{
-    flex-direction:column;
-    text-align:center;
+
+flex-direction:column;
+
+text-align:center;
+
+gap:.4rem;
+
 }
 
 }
