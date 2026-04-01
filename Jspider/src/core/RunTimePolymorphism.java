@@ -37,7 +37,7 @@ class dogesh extends animal {
 public class RunTimePolymorphism {
 	public static void main(String[] args) {
 		animal a1 = new dogesh();
-		a1.drink();
+		a1.eat();
 		a1.drink();
 
 		System.out.println("---------------------------------------------------");

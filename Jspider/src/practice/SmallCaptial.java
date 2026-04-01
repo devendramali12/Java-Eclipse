@@ -10,10 +10,10 @@ public class SmallCaptial {
 		for (int i = 0; i < str.length(); i++) {
 			char ch = str.charAt(i);
 			if (ch >= 65 && ch <= 90) {
-				smaller++;
-
-			} else if (ch >= 90 && ch <= 120) {
 				upper++;
+
+			} else if (ch >= 97 && ch <= 122) {
+				smaller++;
 			} else {
 				Special++;
 

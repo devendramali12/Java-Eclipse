@@ -33,9 +33,9 @@ public class LifeCycleCombined extends Thread {
 		t1.start(); // --> New --> Runnable --> Running
 
 		LifeCycleCombined t2 = new LifeCycleCombined();
-		t2.start();
 		t2.setName("Child-Thread(2)");
 		t2.setPriority(3);
+		t2.start();
 
 		// --> Main Thread Waits for t1 to finish
 		t1.join();
